@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "Se você usar este software, por favor cite como indicado abaixo."
+authors:
+  - family-names: Felix
+    given-names: Lucas
+    orcid: 
+title: "Simulador de Iridescência em Filmes Finos"
+version: 1.0.0
+date-released: 2025-09-23
+doi: 
+repository-code: https://github.com/Lucas-Antunes-Felix/Iris
+license: "MIT" 
+keywords:
+  - Física
+  - Iridescência
+  - Filmes Finos
+  - Simulação
