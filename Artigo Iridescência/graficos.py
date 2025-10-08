@@ -1,90 +1,180 @@
+# =============================================================================
+# GRAFICOS.PY - VISUALIZAÇÕES E PLOTS
+# =============================================================================
+
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.interpolate import interp1d
 
-#GRAFICO DO PADRAO DE CORES
+# Configurar para mostrar gráficos imediatamente
+plt.ion()
 
-def plot_color_map_only(colors_array, x_cm=None, num_colors=500, title="Mapa de Cor"):
-    import matplotlib.pyplot as plt
-    from scipy.interpolate import interp1d
-    import numpy as np
 
+def plot_color_map_only(colors_array, x_cm=None, title="Mapa de Cor da Interferência"):
+    """Plota apenas o padrão de cores da interferência"""
     if x_cm is None:
         x_cm = np.linspace(0, 5, len(colors_array))
 
-    # Interpolação para suavizar cores
+    # Suavização das cores
+    num_colors = 500
     interp_func = interp1d(np.linspace(0, 1, len(colors_array)), colors_array, axis=0, kind='linear')
     interp_colors = interp_func(np.linspace(0, 1, num_colors))
-
-    # Interpolação do eixo Y
     x_interp = np.linspace(x_cm[0], x_cm[-1], num_colors)
 
-    plt.figure(figsize=(10, 6))
+    # Plot
+    fig, ax = plt.subplots(figsize=(10, 6))
     for i in range(num_colors - 1):
-        plt.fill_betweenx(
+        ax.fill_betweenx(
             [x_interp[i], x_interp[i + 1]],
-            0, 1,  # eixo X fictício para visualização do gradiente
+            0, 1,
             color=interp_colors[i],
             edgecolor='none'
         )
 
-    plt.ylabel("cm")
-    plt.title(title)
-    plt.xticks([])  # remove rótulos do eixo X
-    plt.ylim(x_interp[-1], x_interp[0])  # inverter eixo Y para corresponder ao gráfico completo
+    ax.set_ylabel("Posição (cm)")
+    ax.set_title(title)
+    ax.set_xticks([])
+    ax.set_ylim(x_interp[-1], x_interp[0])
     plt.tight_layout()
+
     plt.show()
+    plt.pause(0.1)
+
+    return fig
 
 
-#GRAFICO DO PADRAO DE CORES COM A VARIACAO DA ESPESSURA
-
-def plot_color_map_with_thickness(thickness_array, colors_array, x_cm=None, num_colors=500,
-                                  title="Variação da Espessura do Filme e Mapa de Cor"):
-    import matplotlib.pyplot as plt
-    from scipy.interpolate import interp1d
-    import numpy as np
-
-    # Garantir que a espessura não seja negativa
-    thickness_array = np.maximum(thickness_array, 0)
-    thickness_nm = thickness_array   # converter para nm
-
+def plot_color_map_with_thickness(thickness_array, colors_array, x_cm=None,
+                                  title="Padrão de Cores e Espessura do Filme"):
+    """Plota cores da interferência com curva de espessura"""
     if x_cm is None:
         x_cm = np.linspace(0, 5, len(thickness_array))
 
-    # Interpolação das cores para suavização
+    thickness_array = np.maximum(thickness_array, 0)
+
+    # Suavização
+    num_colors = 500
     interp_func = interp1d(np.linspace(0, 1, len(colors_array)), colors_array, axis=0, kind='linear')
     interp_colors = interp_func(np.linspace(0, 1, num_colors))
-
-    # Inverter verticalmente o mapa de cores
     interp_colors_inverted = interp_colors[::-1]
     x_interp = np.linspace(x_cm[0], x_cm[-1], num_colors)[::-1]
 
-    plt.figure(figsize=(10, 6))
+    # Plot
+    fig, ax = plt.subplots(figsize=(10, 6))
 
-    # Plot do mapa de cores limitado pela curva de espessura
+    # Mapa de cores
     for i in range(num_colors - 1):
-        # Interpolação da espessura correspondente à posição Y
-        y = x_interp[i]
-        # Encontrar o índice mais próximo na curva
-        idx = np.abs(x_cm - y).argmin()
-        # Limite X = espessura correspondente à curva
-        plt.fill_betweenx(
+        idx = np.abs(x_cm - x_interp[i]).argmin()
+        ax.fill_betweenx(
             [x_interp[i], x_interp[i + 1]],
-            0, thickness_nm[idx],  # bloqueia mapa de cor à esquerda da curva
+            0, thickness_array[idx],
             color=interp_colors_inverted[i],
             edgecolor='none'
         )
 
-    # Sobrepor a curva da espessura
-    plt.plot(thickness_nm, x_cm, color='black', linewidth=2, label='Espessura do Filme')
+    # Curva de espessura
+    ax.plot(thickness_array, x_cm, color='black', linewidth=2, label='Espessura do Filme')
 
-    # Configurações dos eixos
-    plt.xlabel("Espessura do Filme (nm)")
-    plt.ylabel("cm")
-    plt.title(title)
-    plt.xlim(0, np.max(thickness_nm) * 1.05)
-    plt.ylim(x_cm[0], x_cm[-1])
-    plt.gca().invert_yaxis()  # mantém visual invertido
-    plt.legend()
+    ax.set_xlabel("Espessura (nm)")
+    ax.set_ylabel("Posição (cm)")
+    ax.set_title(title)
+    ax.set_xlim(0, np.max(thickness_array) * 1.05)
+    ax.set_ylim(x_cm[0], x_cm[-1])
+    ax.invert_yaxis()
+    ax.legend()
     plt.tight_layout()
+
     plt.show()
+    plt.pause(0.1)
+
+    return fig
+
+
+def plotar_comprimento_onda_vs_posicao(resultados_analise, title="Comprimento de Onda vs Posição"):
+    """Plota relação entre comprimento de onda e posição"""
+    posicoes = resultados_analise['posicoes_cm']
+    comprimentos_onda = resultados_analise['comprimentos_onda_nm']
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    ax.plot(posicoes, comprimentos_onda, 'bo-', linewidth=2, markersize=4, alpha=0.7)
+    ax.set_xlabel('Posição (cm)')
+    ax.set_ylabel('Comprimento de Onda (nm)')
+    ax.set_title(title)
+    ax.grid(True, alpha=0.3)
+
+    # Faixas espectrais de referência
+    faixas = [(380, 450, 'Violeta', 'violet'),
+              (450, 495, 'Azul', 'blue'),
+              (495, 570, 'Verde', 'green'),
+              (570, 590, 'Amarelo', 'yellow'),
+              (590, 620, 'Laranja', 'orange'),
+              (620, 750, 'Vermelho', 'red')]
+
+    for inicio, fim, nome, cor in faixas:
+        ax.axhspan(inicio, fim, alpha=0.1, color=cor, label=nome)
+
+    ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.tight_layout()
+
+    plt.show()
+    plt.pause(0.1)
+
+    return fig
+
+
+def analisar_cores_para_comprimento_onda(colors_array, x_cm=None, num_amostras=100):
+    """Analisa cores e converte para comprimentos de onda"""
+    if x_cm is None:
+        x_cm = np.linspace(0, 5, len(colors_array))
+
+    # Amostragem
+    if len(colors_array) > num_amostras:
+        indices = np.linspace(0, len(colors_array) - 1, num_amostras, dtype=int)
+    else:
+        indices = np.arange(len(colors_array))
+
+    posicoes_analisadas = []
+    comprimentos_onda = []
+
+    for idx in indices:
+        cor_rgb = colors_array[idx]
+        lambda_dominante = _rgb_para_comprimento_onda(cor_rgb)
+
+        posicoes_analisadas.append(x_cm[idx])
+        comprimentos_onda.append(lambda_dominante)
+
+    return {
+        'posicoes_cm': np.array(posicoes_analisadas),
+        'comprimentos_onda_nm': np.array(comprimentos_onda) * 1e9
+    }
+
+
+def _rgb_para_comprimento_onda(rgb, intensidade_max=1.0):
+    """Função interna: converte RGB para comprimento de onda"""
+    r, g, b = rgb
+
+    if intensidade_max > 0:
+        r_norm, g_norm, b_norm = r / intensidade_max, g / intensidade_max, b / intensidade_max
+    else:
+        r_norm, g_norm, b_norm = 0, 0, 0
+
+    # Determinação da região espectral
+    if r_norm > g_norm and r_norm > b_norm:
+        if g_norm > 0.5:
+            lambda_approx = 580e-9 + (645e-9 - 580e-9) * (1 - g_norm)
+        else:
+            lambda_approx = 645e-9 - (645e-9 - 580e-9) * r_norm
+    elif g_norm > r_norm and g_norm > b_norm:
+        if r_norm > 0.5:
+            lambda_approx = 580e-9 - (580e-9 - 510e-9) * g_norm
+        else:
+            lambda_approx = 510e-9 + (580e-9 - 510e-9) * g_norm
+    elif b_norm > r_norm and b_norm > g_norm:
+        if g_norm > 0.5:
+            lambda_approx = 490e-9 + (510e-9 - 490e-9) * b_norm
+        else:
+            lambda_approx = 440e-9 + (490e-9 - 440e-9) * b_norm
+    else:
+        lambda_approx = 580e-9 if r_norm > 0.5 else 480e-9
+
+    return lambda_approx

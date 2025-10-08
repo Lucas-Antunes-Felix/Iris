@@ -1,0 +1,9 @@
+PARÂMETROS OTIMIZADOS - SISTEMA DE INTERFERÊNCIA
+================================================
+Alpha:  1.185342e-02 (inicial: 1.100000e-02)
+Beta:   1.076522e-08 (inicial: 9.000000e-09)
+h0:     1.450000e-06
+n_film: 1.300
+Erro RMSE final: 128.42 nm
+Melhoria: -7.8% (alpha)
+Melhoria: -19.6% (beta)
