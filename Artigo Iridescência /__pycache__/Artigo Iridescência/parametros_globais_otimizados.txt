@@ -1,0 +1,6 @@
+PARÂMETROS GLOBAIS OTIMIZADOS
+=============================
+h0:    1588.0 nm
+alpha: 9.629630e-03
+beta:  9.86e-09 m/s
+erro:  457.82 nm

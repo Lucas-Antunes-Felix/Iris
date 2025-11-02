@@ -1,0 +1,12 @@
+PARÂMETROS OTIMIZADOS - ESTRATÉGIA INTELIGENTE
+==============================================
+h0:     16013.7 nm
+alpha:  0.059602 s⁻¹
+beta:   1.02e-08 m/s
+erro:   441.07
+restricoes_respeitadas: True
+
+# Configurações usadas:
+# max_iter: 50
+# tempos_analise: [60, 70, 80, 90]
+# fator_adiantamento: 5s

@@ -1,0 +1,7 @@
+PARÂMETROS OTIMIZADOS - BLACK FILM EM t=60s
+============================================
+h0:     800.0 nm
+alpha:  0.031000 s⁻¹
+beta:   3.00e-08 m/s
+black_film: 50 s
+erro:   827.11 nm
